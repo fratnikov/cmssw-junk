@@ -10,6 +10,7 @@
 #include "DetectorDescription/Core/interface/DDSplit.h"
 #include "DetectorDescription/Core/interface/DDLogicalPart.h"
 #include "Geometry/HGCalCommonData/plugins/DDShashlikEndcap.h"
+#include "DataFormats/EcalDetId/interface/EKDetId.h"
 #include "CLHEP/Units/GlobalPhysicalConstants.h"
 #include "CLHEP/Units/GlobalSystemOfUnits.h"
 
@@ -65,11 +66,12 @@ DDShashlikEndcap::createQuarter( DDCompactView& cpv, int xQuadrant, int yQuadran
   double offsetZ = m_zoffset;
   double offsetX = offsetZ * tan( xphi );
   double offsetY = offsetZ * tan( yphi );
-
-  while( abs(offsetY) < m_rMax )
-  {
-    while( abs(offsetX) < m_rMax )
-    {
+  int column(0);
+  while( abs(offsetX) < m_rMax ) {
+    column++;
+    int row(0);
+    while( abs(offsetY) < m_rMax ) {
+      row++;
       double limit = sqrt( offsetX*offsetX + offsetY*offsetY );
       
       // Make sure we do not add supermodules in rMin area
@@ -91,20 +93,20 @@ DDShashlikEndcap::createQuarter( DDCompactView& cpv, int xQuadrant, int yQuadran
       
 	DDTranslation tran( offsetX, offsetY, offsetZ );
 	
-	DDName parentName = parent().name(); 
-	cpv.position( DDName( m_childName ), parentName, copyNo, tran, rotation );
-
+	DDName parentName = parent().name();
+	int absCopyNo = EKDetId::smIndex (xQuadrant>0?column:-column, yQuadrant>0?row:-row);
+	EKDetId id (absCopyNo, 13, 0, 0, 1, EKDetId::SCMODULEMODE);
+	cpv.position( DDName( m_childName ), parentName, absCopyNo, tran, rotation );
 	copyNo += m_incrCopyNo;
       }
-      xphi +=  xQuadrant*2.*tiltAngle;
-      offsetX = offsetZ * tan( xphi );
+      yphi += yQuadrant*2.*tiltAngle;
+      offsetY = offsetZ * tan( yphi );
     }
-    yphi += yQuadrant*2.*tiltAngle;
-    xphi =  xQuadrant*tiltAngle;
+    xphi +=  xQuadrant*2.*tiltAngle;
+    yphi  =  yQuadrant*tiltAngle;
     offsetX = offsetZ * tan( xphi );
     offsetY = offsetZ * tan( yphi );
   }
-  
   return copyNo;
 }
 
