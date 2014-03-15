@@ -105,9 +105,11 @@ namespace {
 bool EKDetId::validHashIndex( int i ) { return ( i < MAX_HASH_INDEX) ; }
 
 int EKDetId::smIndex (int ismCol, int ismRow) {
-  if (ismCol > MAX_SM_SIZE || ismCol <= -MAX_SM_SIZE || ismRow > MAX_SM_SIZE || ismRow <= -MAX_SM_SIZE) {
+  if (ismCol == 0 || ismCol >= MAX_SM_SIZE || ismCol <= -MAX_SM_SIZE || ismRow == 0 || ismRow >= MAX_SM_SIZE || ismRow <= -MAX_SM_SIZE) {
     throw cms::Exception("InvalidDetId") << "EKDetId::smIndex() called with wrong arguments ismCol:ismRow " << ismCol << ':' << ismRow;
   }
+  if (ismCol > 0) --ismCol;
+  if (ismRow > 0) --ismRow;
   int result = (ismCol+MAX_SM_SIZE)*2*MAX_SM_SIZE + (ismRow+MAX_SM_SIZE);
   return result;
 }
@@ -190,6 +192,12 @@ void EKDetId::setFiber(int fib, int ro) {
  int EKDetId::ism() const {
    int ismCol = (ix() - MODULE_OFFSET) / 5;
    int ismRow = (iy() - MODULE_OFFSET) / 5;
+   return smIndex (ismCol, ismRow);
+ }
+
+int EKDetId::ism(int ix, int iy) {
+   int ismCol = (ix - MODULE_OFFSET) / 5;
+   int ismRow = (iy - MODULE_OFFSET) / 5;
    return smIndex (ismCol, ismRow);
  }
 

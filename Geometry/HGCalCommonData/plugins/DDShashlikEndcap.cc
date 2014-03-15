@@ -97,6 +97,12 @@ DDShashlikEndcap::createQuarter( DDCompactView& cpv, int xQuadrant, int yQuadran
 	int absCopyNo = EKDetId::smIndex (xQuadrant>0?column:-column, yQuadrant>0?row:-row);
 	EKDetId id (absCopyNo, 13, 0, 0, 1, EKDetId::SCMODULEMODE);
 	cpv.position( DDName( m_childName ), parentName, absCopyNo, tran, rotation );
+// 	std::cout << "quadrant " << xQuadrant<<':'<<yQuadrant<<" offset: "<<offsetX<<':'<<offsetY
+// 		  <<" copy# " << absCopyNo
+// 		  << " column:row " << column<<':'<<row
+// 		  << " X:Y location "<<EKDetId::smXLocation(absCopyNo)<<':'<<EKDetId::smYLocation(absCopyNo)
+// 		  << " ix:iy " << id.ix() << ':' << id.iy()
+// 		  <<std::endl;
 	copyNo += m_incrCopyNo;
       }
       yphi += yQuadrant*2.*tiltAngle;
